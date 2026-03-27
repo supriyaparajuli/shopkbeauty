@@ -1,0 +1,5 @@
+{% if item.product.image %}
+<img class="img-fluid product-image" src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+{% else %}
+<img class="img-fluid product-image" src="{{ MEDIA_URL }}shop-kbeauty-logo-final.webp" alt="{{ item.product.name }}">
+{% endif %}

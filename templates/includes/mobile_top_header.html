@@ -1,0 +1,89 @@
+<div id="logo-mobile" class="text-center">
+    <a href="{% url 'home' %}" class="nav-link main-logo-link">
+        <h2 class="logo-font text-black my-0 mx-2"><strong>Shop</strong> K-Beauty</h2>
+    </a>
+</div>
+<ul class="navbar-icons">
+    <!-- SEARCH BAR AREA -->
+    <li class="list-inline-item">
+        <a class="text-black nav-link d-block d-lg-none" href="#" id="mobile-search" data-toggle="dropdown" aria-haspopup="true"
+            aria-expanded="false">
+            <div class="text-center">
+                <div><i class="fas fa-search fa-lg" aria-hidden="true"></i></div>
+                <p class="my-0">Search</p>
+            </div>
+        </a>
+        <!-- Search bar dropdown -->
+        <div class="dropdown-menu border-0 w-100 p-3 rounded-0 my-0" aria-labelledby="mobile-search">
+            <form class="form" method="GET" action="{% url 'products' %}">
+                <div class="input-group w-100">
+                    <input class="form-control border border-black rounded-0" type="text" name="q"
+                        placeholder="Search products, brands or ingredients" aria-label="search">
+                    <div class="input-group-append">
+                        <button class="form-control form-control btn btn-black border border-black rounded-0" type="submit" aria-label="Search">
+                            <span class="icon">
+                                <i class="fas fa-search" aria-hidden="true"></i>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </li>
+    <!-- USER/VISITOR ACCOUNT AREA -->
+    <li class="list-inline-item dropdown">
+        <a class="text-black nav-link d-block d-lg-none" href="#" id="mobile-user-options" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <div class="text-center">
+                <div><i class="fas fa-user fa-lg"></i></div>
+                <p class="my-0">My Account</p>
+            </div>
+        </a>
+        <!-- Account management buttons - signup/login/logout and product management for superusers -->
+        <div class="dropdown-menu border-0 mr-1" aria-labelledby="mobile-user-options">
+            <!-- Product Management button - displays for authenticated superusers only -->
+            {% if request.user.is_authenticated %}
+                {% if request.user.is_superuser %}
+                    <a href="{% url 'add_product' %}" class="dropdown-item mr-1">Product Management</a>
+                {% endif %}
+                <a href="{% url 'profile' %}" class="dropdown-item">My Profile</a>
+                <a href="{% url 'account_logout' %}" class="dropdown-item">Logout</a>
+            <!-- Sign Up and Login buttons -->
+            {% else %}
+                <a href="{% url 'account_signup' %}" class="dropdown-item">Sign Up</a>
+                <a href="{% url 'account_login' %}" class="dropdown-item">Login</a>
+            {% endif %}
+        </div>
+    </li>
+    <!-- WISHLIST BUTTON -->
+    {% if request.user.is_authenticated %}
+    <li class="list-inline-item dropdown">
+        <a class="{% if wishlist %}alt-text-info font-weight-bold{% else %}text-black{% endif %} nav-link px-1 d-lg-none" href="{% url 'wishlist' %}">
+            <div class="text-center">
+                {% if wishlist.count %}
+                <div><i class="fas fa-heart fa-lg"></i></div>
+                <p class="my-0">Wishlist ({{ wishlist.count }})</p>
+                {% else %}
+                <div><i class="fas fa-heart fa-lg"></i></div>
+                <p class="my-0">Wishlist</p>
+                {% endif %}
+            </div>
+        </a>
+    </li>
+    {% endif %}
+    <!-- SHOPPING BAG AREA -->
+    <li class="list-inline-item">
+        <a class="{% if grand_total %}alt-text-primary font-weight-bold{% else %}text-black{% endif %} nav-link d-block d-lg-none" href="{% url 'view_bag' %}">
+            <div class="text-center">
+                <div><i class="fas fa-shopping-bag fa-lg"></i></div>
+                <!-- Displays total item price in the bag -->
+                <p class="my-0">
+                    {% if grand_total %}
+                        £{{ grand_total|floatformat:2 }}
+                    {% else %}
+                        £0.00
+                    {% endif %}
+                </p>
+            </div>
+        </a>
+    </li>
+</ul>

@@ -1,0 +1,965 @@
+/* GOOGLE FONTS IMPORT */
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    color: #000;
+    font-family: 'Lato';
+    overflow-x: hidden;
+}
+
+/* from Bulma */
+.icon {
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+    height: 1.5rem;
+    width: 1.5rem;
+}
+
+/* -------------------------------- Navbar Styling */
+.navbar {
+    padding-bottom: 0;
+}
+
+.navbar-toggler {
+    background-color: #26145b !important; /* use important to override link colors for <a> elements */
+    color: #fff !important;
+}
+
+.navbar-toggler:active,
+.navbar-toggler:hover,
+.navbar-toggler:focus {
+    background-color: #83a8db !important;
+    color: #000 !important;
+}
+
+.nav-fill .nav-item, .nav-fill>.nav-link {
+    text-align: start !important;
+}
+
+.dropdown-menu {
+    min-width: 25rem !important;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    border-radius: 0;
+    border: 2px solid #83a8db;
+    background-color: #e1e2e7;
+}
+
+/* -------------------------------- Hero Section Styling */
+.home-hero {
+    background-image: url('/media/banner1.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 48rem;
+    width: 100%;
+}
+
+.mask {
+    background-color: rgba(255,255,255,0.4);
+}
+
+/* Text color animation credit to Swarup Kumar Kuila - https://codepen.io/uiswarup/pen/XWgQJrq */
+.animate-it {
+    text-transform: uppercase;
+    background-image: linear-gradient(-225deg,
+            #221055 0%,
+            #431c6d 29%,
+            #9c5c72 67%,
+            #b8b683 100%);
+    background-size: auto auto;
+    background-clip: border-box;
+    background-size: 200% auto;
+    color: #fff;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: textclip 2s linear infinite;
+    display: inline-block;
+}
+
+ @keyframes textclip {
+     to {
+         background-position: 200% center;
+     }
+ }
+
+/* -------------------------------- Skincare Tips Page Styling */
+.tips-hero {
+    background-image: url('/media/skincare-tips-bg.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 100%;
+}
+
+.tips-margin {
+    margin-top: 15rem;
+}
+
+/* -------------------------------- Typography Styling */
+.logo-font {
+    text-transform: uppercase;
+}
+
+.logo-font-alt {
+    text-transform: uppercase;
+    color: #26145b;
+    font-weight: 500;
+}
+
+#home-cta-font {
+    font-size: 2.5rem !important;
+}
+
+.nav-font {
+    text-transform: uppercase;
+}
+
+.nav-font-alt {
+    color: #26145b;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.brand-font {
+    color: #800000;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.subcat-font {
+    color: #000;
+}
+
+.subcat-font:hover,
+.subcat-font:active,
+.subcat-font:focus {
+    font-weight: 700;
+    color: #26145b;
+}
+
+.price-font {
+    color: #800000;
+}
+
+.brand-link:hover,
+.banner-link:active,
+.brand-link:focus {
+    color: #000;
+    padding: 5px;
+}
+
+.brand-font-alt {
+    color: #000;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.alt-text-muted {
+    color: #800000;
+}
+
+.alt-text-muted:hover,
+.alt-text-muted:active,
+.alt-text-muted:focus {
+    color: #26145b;
+}
+
+.text-black {
+    color: #000 !important;
+}
+
+.text-pink {
+    color: #7e2831;
+}
+
+.text-muted {
+    color: #26145b !important;
+}
+
+.text-muted:hover,
+.text-muted:active,
+.text-muted:focus {
+    color: #800000 !important;
+}
+
+.text-shadow {
+    text-shadow: 2px 8px 6px rgba(0,0,0,0.6),
+                    0px -5px 35px rgba(255,255,255,0.3);
+}
+
+.nowrap {
+    white-space: nowrap !important;
+}
+
+/* -------------------------------- Buttons & Links Styling */
+.product-subcategories {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+}
+
+a:hover,
+a:active,
+a:visited {
+    text-decoration: none !important;
+}
+
+.shop-now-button,
+.show-brands-list-btn {
+    background: black;
+    color: white;
+    min-width: 16.25rem;
+}
+
+.btn-black {
+    background: black;
+    color: white;
+}
+
+.btn-outline-black {
+    background: rgb(229, 223, 223);
+    color: black !important;
+}
+
+.btn-brand {
+    background: #800000;
+    color: white;
+}
+
+.btn-brand:hover,
+.btn-brand:active,
+.btn-brand:focus {
+    background: black;
+    color: white !important;
+}
+
+.brand-name-link {
+    color: #26145b !important;
+}
+
+.brand-name-link:hover,
+.brand-name-link:active,
+.brand-name-link:visited {
+    text-decoration: none !important;
+    color: #800000 !important;
+}
+
+#brand-show {
+    display: none;
+}
+
+.shop-now-button,
+.btn-black {
+    border-radius: 4px!important;
+    transition: all 0.3s ease-in-out; /* Smooth transition */
+}
+
+.shop-now-button:hover,
+.shop-now-button:active,
+.shop-now-button:focus,
+.btn-black:hover,
+.btn-black:active,
+.btn-black:focus {
+    background: #800000; /* Red hover effect */
+    color: white;
+    border-radius: 50px; /* Maintain rounded corners */
+    transform: scale(1.05); /* Slight zoom effect */
+    box-shadow: 0 0 10px rgba(220, 53, 69, 0.5); /* Soft glow effect */
+}
+
+
+
+.border-black {
+    border: 1px solid black !important;
+}
+
+.bg-black {
+    background: #000 !important;
+}
+
+.border-warning {
+    border-color: #ffca13!important;
+}
+
+.alt-a,
+.alt-text-info,
+.alt-text-primary {
+    color: #800000 !important;
+}
+
+.alt-a:hover,
+.alt-a:active,
+.alt-a:focus,
+.alt-text-info:hover,
+.alt-text-info:active,
+.alt-text-info:focus,
+.alt-text-primary:hover,
+.alt-text-primary:active,
+.alt-text-primary:focus {
+    color: #26145b !important;
+}
+
+a.category-badge > span.badge {
+    background: #800000 !important;
+    color: #fff !important;
+    border-color: #fff !important;
+}
+
+a.category-badge > span.badge:hover {
+    background: #212529 !important;
+    color: #fff !important;
+}
+
+a.subcategory-badge > span.badge {
+    background: #26145b !important;
+    color: #fff !important;
+    border-color: #fff !important;
+}
+
+a.subcategory-badge > span.badge:hover {
+    background: #ffca13 !important;
+    color: #000 !important;
+}
+
+.btt-button {
+    height: 2.625rem;
+    width: 2.625rem;
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background-color: rgba(255,255,255,0.1);
+}
+
+.btt-button:active {
+    background-color: #000;
+}
+
+.btt-link {
+    cursor: pointer;
+}
+
+.update-link,
+.remove-item {
+    cursor: pointer;
+    border: 0;
+    background-color: #fff;
+}
+
+input[name='q']::placeholder {
+    color: #aab7c4;
+}
+
+/* ------------------------------- additional styling for better UI */
+hr {
+    border-top: 1px solid #000;
+}
+
+.alt-hr {
+    border-top: 1px solid #000;
+    width: 80%;
+    margin: 0 auto;
+}
+
+.alt-border {
+    border: 1px solid #000;
+}
+
+.select,
+.form-control {
+    border: 1px solid #000 !important;
+    border-radius: 4px !important;
+
+}
+
+.featured-bg {
+    background-color: #e1e2e7;
+}
+
+.related-products-heading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 1rem auto;
+}
+
+/* ------------------------------- card styling to overwrite bootstrap's default styling */
+.card {
+    color: #000 !important;
+    border-radius: 0;
+}
+
+.card-body {
+    padding-bottom: 10px !important;
+}
+
+.card-footer {
+    border-top: 1px solid #fff;
+    padding-top: 5px !important;
+}
+
+.text-purple {
+    color: #26145b;
+}
+
+.baby-blue-text {
+    color: #83a8db;
+}
+
+/* ------------------------------- card styling for the K-Beauty tips page */
+.card-alt {
+    border: 1px solid #e1e2e7 !important;
+    border-radius: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    -webkit-transition: border 2s ease-out;
+    -moz-transition: border 2s ease-out;
+    -o-transition: border 2s ease-out;
+    transition: border 2s ease-out;
+    -webkit-transition: box-shadow 2s ease-out;
+    -moz-transition: box-shadow 2s ease-out;
+    -o-transition: box-shadow 2s ease-out;
+    transition: box-shadow 2s ease-out;
+    border-radius: 20px !important;
+}
+
+.card-alt:hover {
+    box-shadow: 0 22px 22px -8px #cbced1,
+                -8px 0 22px -8px #cbced1,
+                22px 0 22px -8px #cbced1;
+    border: 1px solid rgba(225, 226, 231, 0.3) !important;
+}
+
+.light-blue-bg {
+    background-color: #83a8db;
+}
+
+.light-pink-bg {
+    background-color: #fcadc1;
+}
+
+.green-bg {
+    background-color: #2a9d8f;
+}
+
+.midnight-blue-bg {
+    background-color: #26145b;
+}
+
+.beige-bg {
+    background-color: #f9f8eb;
+}
+
+.dark-pink-bg {
+    background-color: #742129;
+}
+
+.sunglow-bg {
+    background-color: #ffca13;
+}
+
+.border-glow {
+    border: 1px solid #ffca13 !important;
+}
+
+.mx-extra {
+    margin-left: 5rem !important;
+    margin-right: 5rem !important;
+}
+
+/* ------------------------------- wishlist table styling */
+.wishlist-table-lg {
+    background-color: #e1e2e7;
+}
+
+.wishlist-tr-lg {
+    border: 3px solid #fff;
+}
+
+/* ------------------------------- bootstrap toasts */
+.message-container {
+    position: fixed;
+    top: 4.5rem;
+    right: 1rem;
+    z-index: 99999999999;
+}
+
+.custom-toast {
+    overflow: visible;
+}
+
+.toast-capper {
+    height: 2px;
+}
+
+/* from CSS-tricks.com: https://css-tricks.com/snippets/css/css-triangle/ */
+.arrow-up {
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-bottom: 10px solid black;
+    position: absolute;
+    top: -10px;
+    right: 2.25rem;
+}
+
+/* Convenience classes - colors copied from Bootstrap */
+.arrow-primary {
+    border-bottom-color: #007bff !important;
+}
+
+.arrow-secondary {
+    border-bottom-color: #343a40 !important;
+}
+
+.arrow-success {
+    border-bottom-color: #28a745 !important;
+}
+
+.arrow-danger {
+    border-bottom-color: #86313a !important;
+}
+
+.arrow-warning {
+    border-bottom-color: #ffc107 !important;
+}
+
+.arrow-info {
+    border-bottom-color: #17a2b8 !important;
+}
+
+.arrow-light {
+    border-bottom-color: #f8f9fa !important;
+}
+
+.arrow-dark {
+    border-bottom-color: #343a40 !important;
+}
+
+.bag-notification-wrapper {
+    height: 6.25rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* -------------------------------- Product and Brand Image Styling */
+.image-container {
+    margin: 2rem auto !important;
+}
+
+.product-image-sm {
+    display: flex;
+    width: 3.90625rem;
+    height: 4.6875rem;
+    margin: 1rem auto;
+}
+
+.product-image {
+    display: flex;
+    width: 7.8125rem;
+    height: 9.375rem;
+    margin: 1rem auto;
+}
+
+.product-image-lg {
+    display: flex;
+    width: 15.625rem;
+    height: 18.75rem;
+    margin: 1rem auto;
+}
+
+.brand-image {
+    display: flex;
+    width: 8rem;
+    height: 7rem;
+    margin: 0 auto;
+}
+
+/* -------------------------------- Allauth Forms Styling */
+/* Allauth form formatting */
+
+.allauth-form-inner-content p {
+    margin-top: 1.5rem; /* mt-4 */
+    color: #343a40; /* text-secondary */
+}
+
+.allauth-form-inner-content input {
+    border-color: #000;
+    border-radius: 0;
+}
+
+.allauth-form-inner-content label:not([for='id_remember']) {
+    display: none;
+}
+
+.allauth-form-inner-content input::placeholder {
+    color: #aab7c4;
+}
+
+.allauth-form-inner-content button,
+.allauth-form-inner-content input[type='submit'] {
+	/* btn */
+	display: inline-block;
+    font-weight: 400;
+    color: #fff;
+    text-align: center;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-color: #000;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 0;
+
+    /* standard bootstrap btn transitions */
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+.allauth-form-inner-content button:hover,
+.allauth-form-inner-content input[type='submit']:hover {
+	color: #fff;
+    background-color: #222;
+}
+
+.allauth-form-inner-content a {
+	color: #17a2b8; /* text-info */
+}
+
+/* -------------------------------- Product Form including clearable file input widget to handle image field */
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-file input[type="file"] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.custom-checkbox .custom-control-label::before {
+    border-radius: 0;
+    border-color: #800000;
+}
+
+.custom-checkbox .custom-control-input:checked~.custom-control-label::before {
+    background-color: #800000;
+    border-radius: 0;
+}
+
+/* -------------------------------- 400, 403, 404 and 500 Error Pages Styling */
+.error-hero-bg {
+    background-image: url('/media/error-bg.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 48rem;
+    width: 100%;
+
+}
+
+/* -------------------------------- Footer Styling */
+.footer {
+    background-color: #121111;
+}
+
+.logo-footer {
+    font-size: 1.5rem;
+    margin: 0 auto;
+    text-transform: uppercase;
+    color: #c2c9cb;
+}
+
+.footer-note {
+    background-color: #121111;
+    margin-bottom: 0 !important;
+}
+
+.footer-heading {
+    color: #83a8db;
+}
+
+.social-font {
+    font-family: Lato;
+}
+
+.footer-hr {
+    border-top: 1px solid #800000;
+    width: 80%;
+    margin: 0 auto;
+}
+
+/* -------------------------------- Media Queries */
+/* Slightly larger container on xl screens */
+@media (min-width: 1200px) {
+  .container {
+    max-width: 80%;
+  }
+}
+
+/* sticky top navbar only on medium and up */
+@media (min-width: 992px) {
+    #logo-mobile {
+        display: none;
+    }
+/* Delete Product Button */
+.btn-red {
+    background: #800000; 
+    color: white;
+    border: none;
+    border-radius: 50px; 
+    padding: 12px 25px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out; 
+    border-radius: 7px!important;
+
+}
+
+/* Hover Effect */
+.btn-red:hover {
+    background: #800000; 
+    transform: scale(1.08); 
+}
+
+/* Click Effect */
+.btn-red:active {
+    transform: scale(0.95); /* Press effect */
+}
+
+/* Focus Effect */
+.btn-red:focus {
+    outline: none;
+}
+
+/* Stylish Quantity Buttons (- and +) */
+.btn-qty {
+    background: #555;
+    color: white;
+    border: none;
+    border-radius: 50%; /* Fully circular */
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn-qty:hover {
+    background: linear-gradient(135deg, #ff6b6b, #d90429);
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 3px 3px 10px rgba(255, 0, 0, 0.5);
+}
+
+/* Other Buttons with Rounded Style */
+.btn.btn-outline-black.rounded-0,
+.btn.btn-black.rounded-0 {
+    padding: 12px 20px;
+    border-radius: 30px; /* Rounded corners */
+    font-weight: bold;
+    transition: all 0.3s ease-in-out;
+    border-radius: 7px!important;
+}
+
+.btn.btn-outline-black.rounded-0:hover,
+.btn.btn-black.rounded-0:hover {
+    transform: scale(1.05);
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+
+    .increment-qty, .decrement-qty {
+        padding: .25rem .5rem !important;
+    }
+}
+.fa-list{
+    
+}
+
+@media (max-width: 991px) {
+    .navbar-icons {
+        display: flex;
+        margin-bottom: 0 !important;
+    }
+
+    .navbar-collapse {
+        margin-bottom: 0.625rem;
+    }
+
+    .nav-link {
+        padding: 0.25rem;
+    }
+}
+
+/* styling for home hero content for medium screens and below */
+@media (max-width: 892px) {
+    .display-4 {
+        font-size: 2.5rem !important;
+    }
+
+    .home-hero,
+    .error-hero-bg {
+        height: 36rem;
+        width: 100%;
+    }
+}
+
+@media (max-width: 828px) {
+    .product-image-lg {
+        width: 7.8125rem;
+        height: 9.375rem;
+    }
+}
+
+@media (max-width: 798px) {
+    .navbar-icons {
+        display: flex;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 767px) {
+    .product-review-img {
+        display: flex;
+        width: auto !important;
+        height: 9.375rem;
+        margin: 2rem auto;
+    }
+
+    .mx-extra {
+        margin-left: 2rem !important;
+        margin-right: 2rem !important;
+    }
+}
+
+@media (max-width: 698px) {
+    .logo-font {
+        font-size: 1.5rem;
+    }
+
+    .nav-font {
+        font-size: 1rem;
+    }
+
+    .home-hero,
+    .error-hero-bg {
+        height: 35rem;
+        width: 100%;
+    }
+}
+
+@media (max-width: 574px) {
+    .navbar-icons {
+        display: flex;
+        margin: 0 auto;
+        padding-top: 0.5rem;
+    }
+
+    .nav-item {
+        padding-top: 0.25rem;
+    }
+
+    /* styling for the wishlist table - small screens */
+    .wishlist-thead {
+        display: none;
+    }
+
+    .wishlist-table,
+    .wishlist-tr {
+        display: flex;
+        flex-direction: column;
+        border: 5px solid #fff;
+        background-color: #e1e2e7;
+    }
+
+    .wishlist-table,
+    .wishlist-td[data-label] {
+        display: flex;
+        font-weight: bold;
+        border-bottom: 1px solid #fff;
+    }
+
+    .wishlist-table .wishlist-td[data-label]::before {
+        content: attr(data-label);
+        color: #000;
+        font-weight: 200;
+        margin-right: 1rem;
+        width: 25%;
+    }
+}
+
+@media (max-width: 441px) {
+    .dropdown-menu {
+        min-width: 15rem !important;
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+
+    .banner-font {
+        font-size: 1rem;
+        text-transform: uppercase;
+    }
+
+    .home-hero,
+    .error-hero-bg {
+        height: 37rem;
+        width: 100%;
+    }
+
+    .mask {
+        background-color: rgba(255,255,255,0.7);
+        margin-top: 2rem !important;
+    }
+
+    .shop-now-button,
+    .show-brands-list-btn {
+        min-width: 12rem;
+    }
+}
+
+@media (max-width: 367px) {
+    .display-4 {
+        font-size: 2rem !important;
+    }
+
+    .shop-now-button {
+        min-width: 10rem;
+    }
+}
+
+@media (max-width: 333px) {
+    #home-cta-font {
+        font-size: 1.75rem !important;
+    }
+}
+
+@media (max-width: 328px) {
+    .navbar-toggler {
+        padding-left: 6px;
+        padding-right: 6px;
+    }
+
+    .list-inline-item {
+        margin: 5px auto !important;
+    }
+}

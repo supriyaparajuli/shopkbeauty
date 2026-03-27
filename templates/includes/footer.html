@@ -1,0 +1,106 @@
+<footer class="footer">
+    <div class="container py-3">
+        <div class="col-12">
+            <div class="text-center foot-sm mt-2">
+                <a href="{% url 'home' %}" class="nav-link main-logo-link">
+                    <p class="logo-footer text-center"><strong>Shop</strong> K-Beauty</p>
+                </a>
+                <p class="ml-3 mb-0 text-white">
+                    <small>Newroad, Kathmandu, Nepal </small>
+                </p>
+                <p class="ml-3 mb-0 text-white">
+                    <small>shopkbeauty@example.com</small>
+                </p>
+                <p class="ml-3 mb-0 text-white">
+                    <small>+977 9832425224</small>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <!-- about us -->
+            <div class="col-sm mb-2">
+                <p class="h5 footer-heading">ABOUT</p>
+                <p class="text-white">
+                    Shop K-Beauty is an online shop for all your K-Beauty needs. We stock a wide range of affordable and leading selection
+                    of skincare and hair & body products that will help your skin look and feel amazing!
+                </p>
+            </div>
+            <!-- policies -->
+            <div class="col-sm mb-4">
+                <p class="h5 footer-heading">POLICIES</p>
+                <a href="{% url 'privacy_policy' %}">
+                    <p class="text-white text-left mb-1 ">Privacy Policy</p>
+                </a>
+                <a href="{% url 'terms_and_conditions' %}">
+                    <p class="text-white text-left mb-1">Terms & Conditions</p>
+                </a>
+                <a href="{% url 'return_and_refund_policy' %}">
+                    <p class="text-white text-left mb-1">Return & Refund Policy</p>
+                </a>
+                <a href="{% url 'shipping_policy' %}">
+                    <p class="text-white text-left mb-1">Shipping Policy</p>
+                </a>
+            </div>
+            <!-- social media -->
+            <div class="col-sm mb-4">
+                <p class="h5 footer-heading">FOLLOW US</p>
+                <div class="col p-0 mb-1">
+                    <a href="#" class="text-decoration-none"
+                        target="_blank" rel="noopener" aria-label="Follow Shop K-Beauty on Facebook">
+                        <i class="fab fa-facebook-square text-white" aria-hidden="true">
+                            <span class="text-white social-font pl-2">Facebook</span>
+                        </i>
+                    </a>
+                </div>
+                <div class="col p-0 mb-1">
+                    <a href="#" class="text-decoration-none" target="_blank" rel="noopener"
+                        aria-label="Follow Shop K-Beauty on Instagram">
+                        <i class="fab fa-instagram text-white" aria-hidden="true">
+                            <span class="text-white social-font pl-2">Instagram</span>
+                        </i>
+                    </a>
+                </div>
+                <div class="col p-0 mb-1">
+                    <a href="#" class="text-decoration-none" target="_blank" rel="noopener"
+                        aria-label="Follow Shop K-Beauty on Pinterest">
+                        <i class="fab fa-pinterest text-white" aria-hidden="true">
+                            <span class="text-white social-font pl-2">Pinterest</span>
+                        </i>
+                    </a>
+                </div>
+                <div class="col p-0 mb-1">
+                    <a href="#" class="text-decoration-none" target="_blank" rel="noopener"
+                        aria-label="Follow Shop K-Beauty on Twitter">
+                        <i class="fab fa-twitter text-white" aria-hidden="true">
+                            <span class="text-white social-font pl-2">Twitter</span>
+                        </i>
+                    </a>
+                </div>
+            </div>
+            <!-- payments processing -->
+            <div class="col-sm mb-2">
+                <p class="h5 footer-heading">PAYMENTS PROCESSING</p>
+                <p class="text-white">
+                    Shop K-Beauty's payments processing is powered by Esewa.
+                    Nepal’s leading digital wallet and online payment gateway for secure and convenient transactions.
+            </div>
+        </div>
+    </div>
+    <div class="footer-note">
+        <hr class="footer-hr">
+        <p class="py-3 text-center text-white footer-note">©<span id="current-year"></span>
+            Shop K-Beauty    
+        </p>
+    </div>
+</footer>
+
+{% block postloadjs %}
+<script>
+    // UPDATES COPYRIGHT IN FOOTER TO THE CURRENT YEAR
+    // gets the element by ID and stores it in a constant
+    const currentYear = document.querySelector("#current-year");
+    currentYear.innerText = new Date().getFullYear();
+</script>
+{% endblock %}

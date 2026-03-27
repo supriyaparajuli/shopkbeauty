@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_meta %}
+{% endblock %}
+
+{% block extra_title %}Add a Review | {% endblock %}
+
+{% block page_header %}
+    <div class="container header-container">
+        <div class="row">
+            <div class="col"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="container mb-5">
+        <!-- PAGE HEADING -->
+        <h2 class="display-5 brand-font-alt text-center mt-5 mb-3">Add a review</h2>
+        <p class="text-center h6">Share your experience using {{ product.name }}</p>
+        <hr>
+        <!-- Add product review column -->
+        <div class="row">
+            {% if has_bought %}
+            <div class="col-12 col-md-6 col-lg-4 offset-lg-2">
+                <!-- Add review form  -->
+                <form method="POST" action="{% url 'add_review' product.id %}" id="add-review-form">
+                    {% csrf_token %}
+                    {{ review_form|crispy }}
+                    <!-- Cancel review link -->
+                    <a href="{% url 'product_detail' product.id %}" class="btn btn-black rounded-0 text-uppercase mt-1 mb-3">
+                        <span class="text-uppercase">Cancel</span>
+                    </a>
+                    <!-- Submit review button -->
+                    <button class="btn btn-outline-black rounded-0 mt-1 mb-3 text-uppercase" type="submit">
+                        Submit review
+                        <span class="icon">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+
+            <!-- Product being reviewed column -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <!-- Start of product card -->
+                <div class="card product-review-card mb-5 border-none">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <a href="{% url 'product_detail' product.id %}">
+                                <img class="w-100 product-review-img" src="{{ product.image.url }}" alt="{{ product.name }}">
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card-body pt-3 pr-2 pl-0">
+                                <h3 class="card-title brand-font-alt h6 text-center">{{ product.name }}</h3>
+                                {% if product.category %}
+                                <p class="small mt-1 mb-0 text-center">
+                                    <a class="alt-text-muted font-weight-bold"
+                                        href="{% url 'products' %}?category={{ product.category.name }}">
+                                        <i class="fas fa-list mr-1"></i>{{ product.category.friendly_name }}
+                                    </a>
+                                </p>
+                                {% endif %}
+                                {% if product.subcategory %}
+                                <p class="small mt-1 mb-0 text-center">
+                                    <a class="text-muted font-weight-bold"
+                                        href="{% url 'products' %}?subcategory={{ product.subcategory.name }}">
+                                        <i class="fas fa-tag"></i> {{ product.subcategory.friendly_name }}
+                                    </a>
+                                </p>
+                                {% endif %}
+                            </div>
+                            <div class=" text-center">
+                                <div class="price-box mb-2">
+                                    <p class="h4 mb-0 pb-1">
+                                        <span class="text-left text-pink brand-font"> रु{{ product.price }}</span>
+                                    </p>
+                                    {% if product.discount > 0.01 %}
+                                    <p class="mb-0 text-muted"><s> रु{{ product.original_price }}</s></p>
+                                    <p class="mb-0 text-center"><span class="text-purple">
+                                        <strong>You save:</strong></span>  रु{{ product.discount }}
+                                    </p>
+                                    {% endif %}
+                                </div>
+                                <!-- CTA LINK AS BUTTON -->
+                                <a href="{% url 'product_detail' product.id %}"
+                                    class="btn btn-sm btn-black text-shadow mt-1 rounded-0 mb-4">
+                                    <span class="text-uppercase">Shop Now</span>
+                                    <span class="icon">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
