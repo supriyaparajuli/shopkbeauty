@@ -51,16 +51,16 @@
 
     <body>
         <!-- Header section -->
-        <header class="container-fluid sticky-top">
+        <header class="container-fluid sticky-top" style="background-color:#cdc5bd;">
             <!-- Logo, search bar, my account, wishlist and cart area -->
-            <div id="topnav" class="row bg-white pt-lg-2 d-none d-lg-flex">
+            <div id="topnav" class="row pt-lg-2 d-none d-lg-flex">
                 <div class="col-12 col-lg-4 my-auto py-1 py-lg-0 text-center text-lg-left">
                     <a href="{% url 'home' %}" class="nav-link main-logo-link">
                         <h1 class="h2 logo-font text-black my-0"><strong>Shop</strong> K-Beauty</h1>
                     </a>
                 </div>
                 <!-- Search bar -->
-                <div class="col-12 col-lg-4 my-auto py-1 py-lg-0">
+                <div class="col-12 col-lg-4 my-auto py-1 py-lg-0" >
                     <form method="GET" action="{% url 'products' %}">
                         <div class="input-group w-100">
                             <input class="form-control border border-black rounded-0" type="text" name="q"
@@ -135,7 +135,7 @@
                 </div>
             </div>
             <!-- Navbar area -->
-            <div class="row bg-white">
+            <div class="row" style="background-color:#d6d0c6;">
                 <nav class="navbar navbar-expand-lg w-100">
                     <button class="navbar-toggler mb-1 rounded-0" type="button" data-toggle="collapse" data-target="#main-nav"
                         aria-controls="main-nav" aria-expanded="false" aria-label="Toggle navigation">Menu
@@ -146,8 +146,8 @@
             </div>
             <!-- Delivery banner area -->
             <div id="delivery-banner" class="row text-center">
-                <div class="col bg-black baby-blue-text">
-                    <h2 class="h5 banner-font pt-2">
+                <div class="col baby-blue-text" style="background-color:#9e9587;">
+                    <h2 class="h5 banner-font pt-2"style="color:#fff;">
                         <i class="fas fa-truck"></i> Free delivery on orders over रु{{ free_delivery_threshold }}!
                     </h2>
                 </div>

@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404, HttpResponse
 from django.views.decorators.http import require_POST
 from django.contrib import messages
+from django.http import JsonResponse
 from django.conf import settings
 
 from .forms import OrderForm
@@ -14,17 +15,32 @@ from urllib.parse import urlencode
 import stripe
 import json
 
-import uuid
-import hmac
-import hashlib
-import base64
+
 from django.shortcuts import redirect
 from django.conf import settings
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 @require_POST
 def cache_checkout_data(request):
-    pass
+    try:
+        pid = request.POST.get("client_secret").split("_secret")[0]
+        print("caching checkout data...")
+        stripe.PaymentIntent.modify(
+            pid,
+            metadata={
+                "bag": json.dumps(request.session.get("bag", {})),
+                "save_info": request.POST.get("save_info"),
+                "username": request.user,
+            },
+        )
+
+        return JsonResponse({"status": "success"})
+
+    except Exception as e:
+        messages.error(request, "Sorry, your payment cannot be processed right now.")
+        return HttpResponse(content=e, status=400)
 
 
 def checkout(request):
@@ -47,7 +63,7 @@ def checkout(request):
         # if form is valid, get the data, pid and save the order
         if order_form.is_valid():
             order = order_form.save(commit=False)
-            pid = "pid"
+            pid = request.POST.get("client_secret").split("_secret")[0]
             order.stripe_pid = pid
             order.original_bag = json.dumps(bag)
             print(bag)
@@ -76,11 +92,8 @@ def checkout(request):
                 except Product.DoesNotExist:
                     messages.error(
                         request,
-                        (
-                            "One of the products in your bag wasn't found \
-                            in our database. "
-                            "Please call us for assistance!"
-                        ),
+                        ("One of the products in your bag wasn't found \
+                            in our database. " "Please call us for assistance!"),
                     )
                     order.delete()
                     return redirect(reverse("view_bag"))
@@ -103,6 +116,13 @@ def checkout(request):
 
         current_bag = bag_contents(request)
         total = current_bag["grand_total"]
+
+        stripe_total = int(total * 100)  # convert to cents
+
+        intent = stripe.PaymentIntent.create(
+            amount=stripe_total,
+            currency=settings.STRIPE_CURRENCY,
+        )
 
         # Attempt to prefill the form with the relevant info
         # from the user's profile
@@ -130,8 +150,8 @@ def checkout(request):
     template = "checkout/checkout.html"
     context = {
         "order_form": order_form,
-        "stripe_public_key": "",
-        "client_secret": "",
+        "stripe_public_key": settings.STRIPE_PUBLIC_KEY,
+        "client_secret": intent.client_secret,
     }
 
     return render(request, template, context)
@@ -139,36 +159,6 @@ def checkout(request):
 
 def checkout_success(request, order_number):
     order = get_object_or_404(Order, order_number=order_number)
-    total_amount = str(order.grand_total)
-    transaction_uuid = str(uuid.uuid4())
-    product_code = "EPAYTEST"
-    success_url = request.build_absolute_uri(reverse("payment_success"))
-    failure_url = request.build_absolute_uri(reverse("payment_failure"))
-
-    # Prepare data for signature
-    signed_fields = f"total_amount={total_amount},transaction_uuid={transaction_uuid},product_code={product_code}"
-    secret_key = "8gBm/:&EnhH.1/q"
-
-    hmac_sha256 = hmac.new(
-        secret_key.encode("utf-8"), signed_fields.encode("utf-8"), hashlib.sha256
-    )
-    digest = hmac_sha256.digest()
-    signature_base64 = base64.b64encode(digest).decode("utf-8")
-
-    # Prepare payload
-    payload = {
-        "amount": total_amount,
-        "tax_amount": "0",
-        "total_amount": total_amount,
-        "transaction_uuid": transaction_uuid,
-        "product_code": product_code,
-        "product_service_charge": "0",
-        "product_delivery_charge": "0",
-        "success_url": success_url,
-        "failure_url": failure_url,
-        "signed_field_names": "total_amount,transaction_uuid,product_code",
-        "signature": signature_base64,
-    }
 
     save_info = request.session.get("save_info")
 
@@ -207,23 +197,4 @@ def checkout_success(request, order_number):
         request,
         "checkout/payment_redirect.html",
         {"message": "Payment successful! Redirecting to home...", "redirect_url": "/"},
-    )
-
-
-def payment_success(request):
-    return render(
-        request,
-        "checkout/payment_redirect.html",
-        {"message": "Payment successful! Redirecting to home...", "redirect_url": "/"},
-    )
-
-
-def payment_failure(request):
-    return render(
-        request,
-        "checkout/payment_redirect.html",
-        {
-            "message": "Payment failed or canceled. Redirecting to home...",
-            "redirect_url": "/",
-        },
     )

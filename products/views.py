@@ -15,6 +15,7 @@ from collections import Counter
 from django.contrib.auth.models import User
 from products.models import Product
 
+
 def get_collaborative_recommendations(user, limit=5):
     if not user.is_authenticated:
         return []
@@ -28,9 +29,11 @@ def get_collaborative_recommendations(user, limit=5):
         return []
 
     # Find other users who bought the same products
-    similar_users = User.objects.filter(
-        userprofile__orders__lineitems__product__in=user_products
-    ).exclude(id=user.id).distinct()
+    similar_users = (
+        User.objects.filter(userprofile__orders__lineitems__product__in=user_products)
+        .exclude(id=user.id)
+        .distinct()
+    )
 
     if not similar_users.exists():
         return []
@@ -38,15 +41,16 @@ def get_collaborative_recommendations(user, limit=5):
     # Products bought by those similar users excluding user's own purchases
     similar_user_products = Product.objects.filter(
         orderlineitem__order__user_profile__user__in=similar_users
-    ).exclude(id__in=user_products.values_list('id', flat=True))
+    ).exclude(id__in=user_products.values_list("id", flat=True))
 
     # Count frequency
     product_counts = Counter(similar_user_products)
     recommendations = [p for p, _ in product_counts.most_common(limit)]
 
-    print('RECOMMENDATION = ',recommendations)
+    print("RECOMMENDATION = ", recommendations)
 
     return recommendations
+
 
 def all_products(request):
     """A view to show all products, including sorting, search, and recommendations"""
@@ -59,58 +63,58 @@ def all_products(request):
     direction = None
 
     recommendations = get_collaborative_recommendations(request.user, limit=20)
-    print('RECOMMENDATIONS = ',recommendations)
+    print("RECOMMENDATIONS = ", recommendations)
 
     if request.GET:
-        if 'sort' in request.GET:
-            sortkey = request.GET['sort']
+        if "sort" in request.GET:
+            sortkey = request.GET["sort"]
             sort = sortkey
 
-            if sortkey == 'name':
-                sortkey = 'lower_name'
-                products = products.annotate(lower_name=Lower('name'))
+            if sortkey == "name":
+                sortkey = "lower_name"
+                products = products.annotate(lower_name=Lower("name"))
 
-            if 'direction' in request.GET:
-                direction = request.GET['direction']
-                if direction == 'desc':
-                    sortkey = f'-{sortkey}'
+            if "direction" in request.GET:
+                direction = request.GET["direction"]
+                if direction == "desc":
+                    sortkey = f"-{sortkey}"
             products = products.order_by(sortkey)
 
-        if 'category' in request.GET:
-            categories = request.GET['category'].split(',')
+        if "category" in request.GET:
+            categories = request.GET["category"].split(",")
             products = products.filter(category__name__in=categories)
             categories = Category.objects.filter(name__in=categories)
 
-        if 'subcategory' in request.GET:
-            subcategories = request.GET['subcategory'].split(',')
+        if "subcategory" in request.GET:
+            subcategories = request.GET["subcategory"].split(",")
             products = products.filter(subcategory__name__in=subcategories)
             subcategories = Subcategory.objects.filter(name__in=subcategories)
 
-        if 'q' in request.GET:
-            query = request.GET['q']
+        if "q" in request.GET:
+            query = request.GET["q"]
             if not query:
                 messages.error(request, "You didn't enter any search criteria!")
-                return redirect(reverse('products'))
+                return redirect(reverse("products"))
 
             queries = (
-                Q(name__icontains=query) |
-                Q(description__icontains=query) |
-                Q(ingredients__icontains=query)
+                Q(name__icontains=query)
+                | Q(description__icontains=query)
+                | Q(ingredients__icontains=query)
             )
             products = products.filter(queries)
 
-    current_sorting = f'{sort}_{direction}'
+    current_sorting = f"{sort}_{direction}"
 
     context = {
-        'products': products,               
-        'recommendations': recommendations, 
-        'search_term': query,
-        'current_categories': categories,
-        'current_subcategories': subcategories,
-        'current_sorting': current_sorting,
+        "products": products,
+        "recommendations": recommendations,
+        "search_term": query,
+        "current_categories": categories,
+        "current_subcategories": subcategories,
+        "current_sorting": current_sorting,
     }
 
-    return render(request, 'products/products.html', context)
+    return render(request, "products/products.html", context)
 
 
 def product_detail(request, product_id):
@@ -122,8 +126,9 @@ def product_detail(request, product_id):
 
     product = get_object_or_404(Product, pk=product_id)
     products = Product.objects.all()
-    related_products = list(Product.objects.filter(
-        subcategory=product.subcategory).exclude(pk=product_id))
+    related_products = list(
+        Product.objects.filter(subcategory=product.subcategory).exclude(pk=product_id)
+    )
     if len(related_products) >= 4:
         related_products = random.sample(related_products, 4)
     brands = Brand.objects.all()
@@ -131,53 +136,53 @@ def product_detail(request, product_id):
     wishlist = Wishlist.objects.filter(product=product_id)
 
     if not request.user.is_authenticated:
-        template = 'products/product_detail.html'
+        template = "products/product_detail.html"
         context = {
-            'product': product,
-            'related_products': related_products,
-            'reviews': reviews,
-            'brands': brands,
+            "product": product,
+            "related_products": related_products,
+            "reviews": reviews,
+            "brands": brands,
         }
         return render(request, template, context)
     else:
         user_profile = get_object_or_404(UserProfile, user=request.user)
-        wishlist = Wishlist.objects.filter(user_profile=user_profile,
-                                           product=product_id)
-    template = 'products/product_detail.html'
+        wishlist = Wishlist.objects.filter(
+            user_profile=user_profile, product=product_id
+        )
+    template = "products/product_detail.html"
     context = {
-        'product': product,
-        'related_products': related_products,
-        'reviews': reviews,
-        'brands': brands,
-        'wishlist': wishlist,
+        "product": product,
+        "related_products": related_products,
+        "reviews": reviews,
+        "brands": brands,
+        "wishlist": wishlist,
     }
 
-    return render(request, 'products/product_detail.html', context)
+    return render(request, "products/product_detail.html", context)
 
 
 @login_required
 def add_product(request):
-    """ Add a product to the store """
+    """Add a product to the store"""
     if not request.user.is_superuser:
-        messages.error(request,
-                       'Sorry, only authorized personnel can do that.')
-        return redirect(reverse('home'))
+        messages.error(request, "Sorry, only authorized personnel can do that.")
+        return redirect(reverse("home"))
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
             product = form.save()
-            messages.success(request, 'Successfully added product!')
-            return redirect(reverse('product_detail', args=[product.id]))
+            messages.success(request, "Successfully added product!")
+            return redirect(reverse("product_detail", args=[product.id]))
         else:
-            messages.error(request, 'Failed to add product. \
-                           Please ensure the form is valid.')
+            messages.error(request, "Failed to add product. \
+                           Please ensure the form is valid.")
     else:
         form = ProductForm()
 
-    template = 'products/add_product.html'
+    template = "products/add_product.html"
     context = {
-        'form': form,
+        "form": form,
     }
 
     return render(request, template, context)
@@ -185,30 +190,29 @@ def add_product(request):
 
 @login_required
 def edit_product(request, product_id):
-    """ Edit a product in the store """
+    """Edit a product in the store"""
     if not request.user.is_superuser:
-        messages.error(request,
-                       'Sorry, only authorized personnel can do that.')
-        return redirect(reverse('home'))
+        messages.error(request, "Sorry, only authorized personnel can do that.")
+        return redirect(reverse("home"))
 
     product = get_object_or_404(Product, pk=product_id)
-    if request.method == 'POST':
+    if request.method == "POST":
         form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Successfully updated product!')
-            return redirect(reverse('product_detail', args=[product.id]))
+            messages.success(request, "Successfully updated product!")
+            return redirect(reverse("product_detail", args=[product.id]))
         else:
-            messages.error(request, 'Failed to update product.\
-                Please ensure the form is valid.')
+            messages.error(request, "Failed to update product.\
+                Please ensure the form is valid.")
     else:
         form = ProductForm(instance=product)
-        messages.info(request, f'You are editing {product.name}')
+        messages.info(request, f"You are editing {product.name}")
 
-    template = 'products/edit_product.html'
+    template = "products/edit_product.html"
     context = {
-        'form': form,
-        'product': product,
+        "form": form,
+        "product": product,
     }
 
     return render(request, template, context)
@@ -216,26 +220,25 @@ def edit_product(request, product_id):
 
 @login_required
 def delete_product(request, product_id):
-    """ Delete a product from the store """
+    """Delete a product from the store"""
     if not request.user.is_superuser:
-        messages.error(request,
-                       'Sorry, only authorized personnel can do that.')
-        return redirect(reverse('home'))
+        messages.error(request, "Sorry, only authorized personnel can do that.")
+        return redirect(reverse("home"))
 
     product = get_object_or_404(Product, pk=product_id)
     product.delete()
-    messages.success(request, 'Product deleted!')
-    return redirect(reverse('products'))
+    messages.success(request, "Product deleted!")
+    return redirect(reverse("products"))
 
 
 def all_brands(request):
-    """A view to show all the available brands """
+    """A view to show all the available brands"""
     brands = Brand.objects.all()
 
     context = {
-        'brands': brands,
+        "brands": brands,
     }
-    return render(request, 'products/brands.html', context)
+    return render(request, "products/brands.html", context)
 
 
 def brand_detail(request, brand_id):
@@ -248,37 +251,36 @@ def brand_detail(request, brand_id):
     products = Product.objects.filter(brand=brand)
 
     context = {
-        'product': product,
-        'brand': brand,
-        'products': products,
+        "product": product,
+        "brand": brand,
+        "products": products,
     }
 
-    return render(request, 'products/brand_detail.html', context)
+    return render(request, "products/brand_detail.html", context)
 
 
 @login_required
 def add_brand(request):
-    """ Add a brand to the store """
+    """Add a brand to the store"""
     if not request.user.is_superuser:
-        messages.error(request,
-                       'Sorry, only authorized personnel can do that.')
-        return redirect(reverse('home'))
+        messages.error(request, "Sorry, only authorized personnel can do that.")
+        return redirect(reverse("home"))
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = BrandForm(request.POST, request.FILES)
         if form.is_valid():
             brand = form.save()
-            messages.success(request, 'Successfully added brand!')
-            return redirect(reverse('brand_detail', args=[brand.id]))
+            messages.success(request, "Successfully added brand!")
+            return redirect(reverse("brand_detail", args=[brand.id]))
         else:
-            messages.error(request, 'Failed to add brand. \
-                           Please ensure the form is valid.')
+            messages.error(request, "Failed to add brand. \
+                           Please ensure the form is valid.")
     else:
         form = BrandForm()
 
-    template = 'products/add_brand.html'
+    template = "products/add_brand.html"
     context = {
-        'form': form,
+        "form": form,
     }
 
     return render(request, template, context)
@@ -286,30 +288,29 @@ def add_brand(request):
 
 @login_required
 def edit_brand(request, brand_id):
-    """ Edit a brand in the store """
+    """Edit a brand in the store"""
     if not request.user.is_superuser:
-        messages.error(request,
-                       'Sorry, only authorized personnel can do that.')
-        return redirect(reverse('home'))
+        messages.error(request, "Sorry, only authorized personnel can do that.")
+        return redirect(reverse("home"))
 
     brand = get_object_or_404(Brand, pk=brand_id)
-    if request.method == 'POST':
+    if request.method == "POST":
         form = BrandForm(request.POST, request.FILES, instance=brand)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Successfully updated brand!')
-            return redirect(reverse('brand_detail', args=[brand.id]))
+            messages.success(request, "Successfully updated brand!")
+            return redirect(reverse("brand_detail", args=[brand.id]))
         else:
-            messages.error(request, 'Failed to update brand.\
-                Please ensure the form is valid.')
+            messages.error(request, "Failed to update brand.\
+                Please ensure the form is valid.")
     else:
         form = BrandForm(instance=brand)
-        messages.info(request, f'You are editing {brand.friendly_name}')
+        messages.info(request, f"You are editing {brand.friendly_name}")
 
-    template = 'products/edit_brand.html'
+    template = "products/edit_brand.html"
     context = {
-        'form': form,
-        'brand': brand,
+        "form": form,
+        "brand": brand,
     }
 
     return render(request, template, context)

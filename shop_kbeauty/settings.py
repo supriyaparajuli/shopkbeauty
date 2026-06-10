@@ -13,10 +13,9 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 import dj_database_url
 from pathlib import Path
+from dotenv import load_dotenv
 
-
-if os.path.isfile("env.py"):
-    import env
+load_dotenv()
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -37,6 +36,7 @@ ALLOWED_HOSTS = ["*"]
 
 # Application definition
 INSTALLED_APPS = [
+    "jazzmin",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -224,6 +224,11 @@ if "USE_AWS" in os.environ:
 # auto calculating free delivery
 FREE_DELIVERY_THRESHOLD = 5000
 STANDARD_DELIVERY_PERCENTAGE = 10
+
+# Stripe keys
+STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY")
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+STRIPE_CURRENCY = "usd"
 
 # EMAIL VERIFICATION SETTINGS
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
