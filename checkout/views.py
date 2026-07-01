@@ -46,7 +46,7 @@ def cache_checkout_data(request):
 def checkout(request):
     if request.method == "POST":
         bag = request.session.get("bag", {})
-
+        payment_method = request.POST.get("payment_method")
         form_data = {
             "full_name": request.POST["full_name"],
             "email": request.POST["email"],
@@ -63,8 +63,15 @@ def checkout(request):
         # if form is valid, get the data, pid and save the order
         if order_form.is_valid():
             order = order_form.save(commit=False)
-            pid = request.POST.get("client_secret").split("_secret")[0]
-            order.stripe_pid = pid
+            order.payment_method = payment_method
+            if payment_method == "Stripe":
+                pid = request.POST.get("client_secret").split("_secret")[0]
+                order.stripe_pid = pid
+                order.payment_status = "Paid"
+            else:
+                order.stripe_pid = ""
+                order.payment_status = "Pending"
+
             order.original_bag = json.dumps(bag)
             print(bag)
             order.save()

@@ -15,6 +15,8 @@ from collections import Counter
 from django.contrib.auth.models import User
 from products.models import Product
 
+from products.recommendation import get_content_based_recommendations
+
 
 def get_collaborative_recommendations(user, limit=5):
     if not user.is_authenticated:
@@ -129,6 +131,7 @@ def product_detail(request, product_id):
     related_products = list(
         Product.objects.filter(subcategory=product.subcategory).exclude(pk=product_id)
     )
+
     if len(related_products) >= 4:
         related_products = random.sample(related_products, 4)
     brands = Brand.objects.all()
@@ -314,3 +317,10 @@ def edit_brand(request, brand_id):
     }
 
     return render(request, template, context)
+
+
+# def product_detail(request, product_id):
+
+#     product = get_object_or_404(Product, pk=product_id)
+
+#     content_recommendations = get_content_based_recommendations(product)

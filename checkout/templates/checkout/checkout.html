@@ -150,6 +150,36 @@ Secure Checkout |
             {% endif %}
           </div>
         </fieldset>
+        <div class="mb-4">
+    <label class="font-weight-bold">Choose Payment Method</label>
+
+    <div class="form-check">
+        <input
+            class="form-check-input"
+            type="radio"
+            name="payment_method"
+            id="stripe-payment"
+            value="Stripe"
+            checked>
+
+        <label class="form-check-label" for="stripe-payment">
+            Pay with Card (Stripe)
+        </label>
+    </div>
+
+    <div class="form-check">
+        <input
+            class="form-check-input"
+            type="radio"
+            name="payment_method"
+            id="cod-payment"
+            value="COD">
+
+        <label class="form-check-label" for="cod-payment">
+            Cash on Delivery
+        </label>
+       </div>
+       </div>
         <fieldset class="px-3">
           <legend
             class="fieldset-label small text-purple font-weight-bold px-2 w-auto"
@@ -224,7 +254,29 @@ Secure Checkout |
 
   var card = elements.create("card", { style: style });
   card.mount("#card-element");
+  const stripeRadio = document.getElementById("stripe-payment");
+const codRadio = document.getElementById("cod-payment");
 
+const cardElement = document.getElementById("card-element");
+
+function togglePaymentMethod() {
+
+    if (codRadio.checked) {
+
+        cardElement.style.display = "none";
+
+    } else {
+
+        cardElement.style.display = "block";
+
+    }
+}
+
+stripeRadio.addEventListener("change", togglePaymentMethod);
+
+codRadio.addEventListener("change", togglePaymentMethod);
+
+togglePaymentMethod();
   card.on("change", function (event) {
     var errorDiv = document.getElementById("card-errors");
     if (event.error) {
@@ -238,7 +290,16 @@ Secure Checkout |
 
   form.addEventListener("submit", function (ev) {
     ev.preventDefault();
+   const paymentMethod = document.querySelector(
+    'input[name="payment_method"]:checked'
+).value;
 
+if (paymentMethod === "COD") {
+
+    form.submit();
+
+    return;
+}
     document.getElementById("loading-overlay").style.display = "block";
 
     fetch("/checkout/cache_checkout_data/", {

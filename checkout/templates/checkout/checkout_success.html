@@ -157,19 +157,46 @@
           </div>
         </div>
         <!-- BILLING INFO -->
-        <div class="row mt-3">
-          <div class="col">
-            <small class="text-pink">Billing Info:</small>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-12 col-md-4">
-            <p class="mb-0 text-black font-weight-bold">Payment Status</p>
-          </div>
-          <div class="col-12 col-md-8 text-md-right">
-            <p class="mb-0 text-success">Paid</p>
-          </div>
-        </div>
+        <!-- BILLING INFO -->
+<div class="row mt-3">
+  <div class="col">
+    <small class="text-pink">Billing Info:</small>
+  </div>
+</div>
+
+<!-- Payment Method -->
+<div class="row">
+  <div class="col-12 col-md-4">
+    <p class="mb-0 text-black font-weight-bold">
+      Payment Method
+    </p>
+  </div>
+  <div class="col-12 col-md-8 text-md-right">
+    <p class="mb-0">
+      {{ order.payment_method }}
+    </p>
+  </div>
+</div>
+
+<!-- Payment Status -->
+<div class="row">
+  <div class="col-12 col-md-4">
+    <p class="mb-0 text-black font-weight-bold">
+      Payment Status
+    </p>
+  </div>
+  <div class="col-12 col-md-8 text-md-right">
+
+    {% if order.payment_status == "Paid" %}
+      <p class="mb-0 text-success">{{ order.payment_status }}</p>
+
+    {% else %}
+      <p class="mb-0 text-warning">{{ order.payment_status }}</p>
+
+    {% endif %}
+
+  </div>
+</div>
         <!-- 3 rows for each form field in the Billing Info section -->
         <!-- row 1: Order Total -->
         <div class="row">
