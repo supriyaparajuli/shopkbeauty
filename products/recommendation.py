@@ -17,25 +17,34 @@ def get_collaborative_recommendations(user, limit=5):
         return []
 
     # Get products purchased by the current user
-    user_products = Product.objects.filter(orderlineitem__order__user=user).distinct()
+    user_products = Product.objects.filter(
+        orderlineitem__order__user_profile__user=user
+    ).distinct()
+
+    print("Current User:", user.username)
+    print("Purchased Products:", list(user_products))
 
     if not user_products.exists():
         return []
 
     # Find similar users who bought at least one same product
     similar_users = (
-        User.objects.filter(order__orderlineitem__product__in=user_products)
+        User.objects.filter(userprofile__orders__lineitems__product__in=user_products)
         .exclude(id=user.id)
         .distinct()
     )
+
+    print("Similar Users:", list(similar_users))
 
     if not similar_users.exists():
         return []
 
     # Get products bought by similar users, excluding user's own purchases
     similar_user_products = Product.objects.filter(
-        orderlineitem__order__user__in=similar_users
+        orderlineitem__order__user_profile__user__in=similar_users
     ).exclude(id__in=user_products.values_list("id", flat=True))
+
+    print("Products Bought By Similar Users:", list(similar_user_products))
 
     # Convert queryset to list for counting
     similar_user_products_list = list(similar_user_products)
@@ -43,6 +52,8 @@ def get_collaborative_recommendations(user, limit=5):
     # Rank products by purchase frequency
     product_counts = Counter(similar_user_products_list)
     recommendations = [product for product, _ in product_counts.most_common(limit)]
+
+    print("Final Recommendations:", recommendations)
 
     return recommendations
 

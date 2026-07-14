@@ -1,3 +1,5 @@
+from itertools import product
+
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -15,43 +17,10 @@ from collections import Counter
 from django.contrib.auth.models import User
 from products.models import Product
 
-from products.recommendation import get_content_based_recommendations
-
-
-def get_collaborative_recommendations(user, limit=5):
-    if not user.is_authenticated:
-        return []
-
-    # Products purchased by current user
-    user_products = Product.objects.filter(
-        orderlineitem__order__user_profile__user=user
-    ).distinct()
-
-    if not user_products.exists():
-        return []
-
-    # Find other users who bought the same products
-    similar_users = (
-        User.objects.filter(userprofile__orders__lineitems__product__in=user_products)
-        .exclude(id=user.id)
-        .distinct()
-    )
-
-    if not similar_users.exists():
-        return []
-
-    # Products bought by those similar users excluding user's own purchases
-    similar_user_products = Product.objects.filter(
-        orderlineitem__order__user_profile__user__in=similar_users
-    ).exclude(id__in=user_products.values_list("id", flat=True))
-
-    # Count frequency
-    product_counts = Counter(similar_user_products)
-    recommendations = [p for p, _ in product_counts.most_common(limit)]
-
-    print("RECOMMENDATION = ", recommendations)
-
-    return recommendations
+from products.recommendation import (
+    get_collaborative_recommendations,
+    get_content_based_recommendations,
+)
 
 
 def all_products(request):
@@ -128,12 +97,14 @@ def product_detail(request, product_id):
 
     product = get_object_or_404(Product, pk=product_id)
     products = Product.objects.all()
-    related_products = list(
-        Product.objects.filter(subcategory=product.subcategory).exclude(pk=product_id)
+
+    related_products = Product.objects.filter(subcategory=product.subcategory).exclude(
+        pk=product.pk
     )
 
     if len(related_products) >= 4:
         related_products = random.sample(related_products, 4)
+
     brands = Brand.objects.all()
     reviews = Review.objects.filter(product=product)
     wishlist = Wishlist.objects.filter(product=product_id)
