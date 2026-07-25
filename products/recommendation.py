@@ -1,9 +1,132 @@
 from collections import Counter
 from django.contrib.auth.models import User
 from products.models import Product
-import nltk
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+# Important skincare ingredients recognized by our ML model
+KNOWN_INGREDIENTS = [
+    "niacinamide",
+    "hyaluronic acid",
+    "sodium hyaluronate",
+    "glycerin",
+    "ceramide",
+    "centella asiatica",
+    "cica",
+    "green tea",
+    "green tea extract",
+    "green plum",
+    "green plum extract",
+    "snail mucin",
+    "retinol",
+    "vitamin c",
+    "panthenol",
+    "allantoin",
+    "salicylic acid",
+    "glycolic acid",
+    "rice extract",
+    "propolis",
+    "honey",
+    "collagen",
+    "peptide",
+    "ginseng",
+    "betaine",
+    "squalane",
+    "aloe vera",
+    "camellia",
+    "zinc oxide",
+    "titanium dioxide",
+]
+PRODUCT_GROUPS = {
+    "eye cream": "eye",
+    "eye patch": "eye",
+    "foot cream": "foot",
+    "foot": "foot",
+    "body lotion": "body",
+    "body scrub": "body",
+    "body mist": "body",
+    "soap": "body",
+    "shampoo": "hair",
+    "conditioner": "hair",
+    "hair": "hair",
+    "scalp": "hair",
+    "cleanser": "face",
+    "face wash": "face",
+    "serum": "face",
+    "essence": "face",
+    "toner": "face",
+    "moisturizer": "face",
+    "sunscreen": "face",
+    "mask": "face",
+    "cream": "face",
+    "lip": "lip",
+}
+
+GENERIC_WORDS = {
+    "cream",
+    "gel",
+    "mask",
+    "soap",
+    "oil",
+    "lotion",
+    "wash",
+    "cleanser",
+    "serum",
+    "essence",
+    "toner",
+    "mist",
+    "moisturizer",
+    "sunscreen",
+    "scrub",
+    "conditioner",
+    "shampoo",
+    "product",
+    "skin",
+    "beauty",
+}
+
+COMPATIBLE_GROUPS = {
+    "face": ["face", "eye"],
+    "eye": ["eye", "face"],
+    "body": ["body"],
+    "foot": ["foot"],
+    "hair": ["hair"],
+    "lip": ["lip"],
+}
+
+MIN_SIMILARITY = 0.12
+
+
+def extract_important_ingredients(text):
+    """
+    Extract only important skincare ingredients.
+    """
+
+    text = text.lower()
+
+    found = []
+
+    for ingredient in KNOWN_INGREDIENTS:
+
+        if ingredient in text:
+            found.append(ingredient)
+
+    return found
+
+
+def ingredient_overlap_score(product1, product2):
+    """
+    Reward products that share important skincare ingredients.
+    """
+
+    ingredients1 = set(extract_important_ingredients(product1.ingredients))
+    ingredients2 = set(extract_important_ingredients(product2.ingredients))
+
+    shared = sorted(list(ingredients1.intersection(ingredients2)))
+
+    overlap_bonus = len(shared) * 0.10
+
+    return overlap_bonus, shared
 
 
 def get_collaborative_recommendations(user, limit=5):
@@ -58,186 +181,241 @@ def get_collaborative_recommendations(user, limit=5):
     return recommendations
 
 
-# Download only once
-try:
-    nltk.data.find("tokenizers/punkt")
-except:
-    nltk.download("punkt")
-
-try:
-    nltk.data.find("corpora/stopwords")
-except:
-    nltk.download("stopwords")
-
-STOP_WORDS = set(stopwords.words("english"))
-
-# ======================================
-# INGREDIENT DICTIONARY
-# ======================================
-
-INGREDIENTS = [
-    "green plum extract",
-    "glycolic acid",
-    "green tea extract",
-    "camellia",
-    "sodium hyaluronate",
-    "hyaluronic acid",
-    "aloe vera",
-    "centella asiatica",
-    "cica",
-    "lime extract",
-    "niacinamide",
-    "ceramide",
-    "retinol",
-    "vitamin c",
-    "peptide",
-    "collagen",
-    "snail mucin",
-    "panthenol",
-    "allantoin",
-    "glycerin",
-    "betaine",
-    "salicylic acid",
-    "rice extract",
-    "ginseng",
-    "propolis",
-    "honey",
-    "squalane",
-    "zinc oxide",
-    "titanium dioxide",
-]
-
-# ======================================
-# BENEFIT DICTIONARY
-# ======================================
-
-BENEFIT_KEYWORDS = {
-    "hydrating": [
-        "hyaluronic acid",
-        "sodium hyaluronate",
-        "aloe vera",
-        "glycerin",
-        "betaine",
-        "snail mucin",
-        "squalane",
-    ],
-    "soothing": [
-        "centella asiatica",
-        "cica",
-        "green tea extract",
-        "camellia",
-        "aloe vera",
-        "allantoin",
-        "panthenol",
-    ],
-    "brightening": [
-        "niacinamide",
-        "vitamin c",
-        "green plum extract",
-        "lime extract",
-        "rice extract",
-    ],
-    "anti-aging": ["retinol", "peptide", "collagen", "ginseng"],
-    "barrier-repair": ["ceramide", "panthenol", "squalane"],
-    "acne-care": ["salicylic acid", "niacinamide"],
-}
-
-# ======================================
-# TEXT PREPROCESSING (NLTK)
-# ======================================
-
-
-def preprocess_text(text):
+# CONTENT BASED RECOMMENDATION
+def extract_skin_benefits(text):
+    """
+    Convert ingredient names into skincare benefits.
+    """
 
     text = text.lower()
 
-    tokens = word_tokenize(text)
+    benefits = []
 
-    tokens = [token for token in tokens if token.isalnum() and token not in STOP_WORDS]
+    ingredient_benefits = {
+        "niacinamide": ["brightening", "oil-control"],
+        "hyaluronic acid": ["hydrating"],
+        "sodium hyaluronate": ["hydrating"],
+        "ceramide": ["barrier-repair"],
+        "centella": ["soothing"],
+        "centella asiatica": ["soothing"],
+        "cica": ["soothing"],
+        "salicylic acid": ["acne"],
+        "retinol": ["anti-aging"],
+        "peptide": ["anti-aging"],
+        "vitamin c": ["brightening"],
+        "glycerin": ["hydrating"],
+        "panthenol": ["barrier-repair"],
+        "snail": ["repair"],
+        "snail mucin": ["repair"],
+        "green tea": ["soothing"],
+        "ginseng": ["anti-aging"],
+    }
 
-    return " ".join(tokens)
-
-
-# ======================================
-# EXTRACT INGREDIENTS
-# ======================================
-
-
-def extract_ingredients(text):
-
-    text = preprocess_text(text)
-
-    found = []
-
-    for ingredient in INGREDIENTS:
-
-        if ingredient.lower() in text:
-            found.append(ingredient)
-
-    return set(found)
-
-
-# ======================================
-# EXTRACT BENEFITS
-# ======================================
-
-
-def extract_benefits(text):
-
-    ingredients = extract_ingredients(text)
-
-    benefits = set()
-
-    for benefit, keywords in BENEFIT_KEYWORDS.items():
-
-        for keyword in keywords:
-
-            if keyword in ingredients:
-
-                benefits.add(benefit)
+    for ingredient, tags in ingredient_benefits.items():
+        if ingredient in text:
+            benefits.extend(tags)
 
     return benefits
 
 
-# ======================================
-# CONTENT BASED RECOMMENDER
-# ======================================
+def detect_product_group(product):
+
+    text = (
+        f"{product.name} " f"{product.subcategory.name if product.subcategory else ''}"
+    ).lower()
+
+    for keyword, group in PRODUCT_GROUPS.items():
+
+        if keyword in text:
+
+            return group
+
+    return "other"
+
+
+def create_product_text(product):
+    """
+    Create one text document representing a product.
+    Important features are repeated to give them higher importance.
+    """
+
+    category = product.category.name if product.category else ""
+    subcategory = product.subcategory.name if product.subcategory else ""
+    brand = product.brand.name if product.brand else ""
+
+    # Extract only important skincare ingredients
+    important_ingredients = extract_important_ingredients(product.ingredients)
+
+    skin_benefits = extract_skin_benefits(product.ingredients)
+
+    name = product.name.lower()
+
+    description = product.description.lower()
+
+    name = product.name
+    description = product.description
+
+    text = f"""
+    {name}
+    {name}
+
+    {subcategory}
+    {subcategory}
+
+    {category}
+
+    {brand}
+
+    {description}
+
+    {' '.join(important_ingredients)}
+    {' '.join(important_ingredients)}
+    {' '.join(important_ingredients)}
+    {' '.join(important_ingredients)}
+
+    {' '.join(skin_benefits)}
+    {' '.join(skin_benefits)}
+
+    {product.how_to_use}
+    """
+
+    return text.lower()
 
 
 def get_content_based_recommendations(product, limit=5):
+    """
+    Machine Learning Content-Based Recommendation
+    using TF-IDF + Cosine Similarity
+    """
 
-    current_ingredients = extract_ingredients(product.ingredients)
+    products = list(Product.objects.all())
 
-    current_benefits = extract_benefits(product.ingredients)
+    # Find current product index
+    current_index = None
+
+    for i, p in enumerate(products):
+        if p.id == product.id:
+            current_index = i
+            break
+
+    if current_index is None:
+        return []
+
+    vectorizer = TfidfVectorizer(
+        stop_words=list(GENERIC_WORDS),
+        lowercase=True,
+        ngram_range=(1, 2),
+        min_df=1,
+    )
+
+    documents = [create_product_text(p) for p in products]
+
+    tfidf_matrix = vectorizer.fit_transform(documents)
+
+    similarity = cosine_similarity(tfidf_matrix)
+
+    similarity_scores = list(enumerate(similarity[current_index]))
+
+    current_group = detect_product_group(product)
+
+    similarity_scores = sorted(similarity_scores, key=lambda x: x[1], reverse=True)
+
+    scored_products = []
 
     recommendations = []
 
-    products = Product.objects.exclude(id=product.id)
+    for index, score in similarity_scores:
 
-    for other in products:
+        if products[index].id == product.id:
+            continue
 
-        other_ingredients = extract_ingredients(other.ingredients)
+        if score < MIN_SIMILARITY:
+            continue
 
-        other_benefits = extract_benefits(other.ingredients)
+        candidate = products[index]
 
-        ingredient_matches = len(current_ingredients.intersection(other_ingredients))
+        candidate_group = detect_product_group(candidate)
 
-        benefit_matches = len(current_benefits.intersection(other_benefits))
+        # --------------------------------------------------
+        # Only recommend products from compatible groups
+        # --------------------------------------------------
 
-        score = 0
+        allowed_groups = COMPATIBLE_GROUPS.get(current_group, [current_group])
 
-        # ingredient similarity
-        score += ingredient_matches * 5
+        if candidate_group not in allowed_groups:
+            continue
 
-        # benefit similarity
-        score += benefit_matches * 10
+        compatibility_bonus = 0.10
 
-        # same category boost
-        if other.subcategory == product.subcategory:
-            score += 20
+        # NEW
+        ingredient_bonus, shared_ingredients = ingredient_overlap_score(
+            product,
+            candidate,
+        )
 
-        recommendations.append((other, score))
+        final_score = (
+            score * 0.60 + ingredient_bonus * 0.30 + compatibility_bonus * 0.10
+        )
 
-    recommendations.sort(key=lambda x: x[1], reverse=True)
+        print(f"{products[index].name:<55}" f"Similarity Score = {score:.4f}")
 
-    return [item[0] for item in recommendations[:limit]]
+        scored_products.append(
+            (
+                final_score,
+                candidate,
+                score,
+                compatibility_bonus,
+                ingredient_bonus,
+                shared_ingredients,
+            )
+        )
+
+        if len(recommendations) == limit:
+            break
+
+    scored_products.sort(
+        key=lambda x: x[0],
+        reverse=True,
+    )
+
+    recommendations = []
+
+    for (
+        final_score,
+        candidate,
+        similarity_score,
+        compatibility_bonus,
+        ingredient_bonus,
+        shared_ingredients,
+    ) in scored_products:
+
+        print(
+            f"{candidate.name:<40}"
+            f"Similarity={similarity_score:.3f}   "
+            f"Compatibility={compatibility_bonus:.2f}   "
+            f"Ingredients={ingredient_bonus:.2f}   "
+            f"Final={final_score:.3f}"
+        )
+
+        print("Shared Ingredients:", shared_ingredients)
+        print("-" * 70)
+
+        recommendations.append(
+            {
+                "product": candidate,
+                "score": round(final_score, 3),
+                "shared_ingredients": shared_ingredients,
+            }
+        )
+
+        if len(recommendations) == limit:
+            break
+
+    print("\n")
+    print("=" * 70)
+    print(f"CURRENT PRODUCT : {product.name}")
+    print("=" * 70)
+    print("Top Similar Products")
+    print("-" * 70)
+
+    return recommendations

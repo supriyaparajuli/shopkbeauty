@@ -302,6 +302,71 @@
             {% endif %}
         </div>
     </div>
+<!-- ML CONTENT-BASED RECOMMENDATIONS -->
+    <div class="featured-bg pb-5">
+        <h4 class="display-4 related-products-heading text-purple pt-5 pb-3">
+            Recommended Based on Ingredients
+        </h4>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 ml-3 mr-3">
+            {% for item in content_recommendations %}
+            <div class="col mb-4">
+                <div class="card card-alt h-100">
+                    <a href="{% url 'product_detail' item.product.id %}">
+                        <img class="card-img-top product-image img-fluid" src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                    </a>
+                    <div class="card-body">
+                        <h3 class="card-title brand-font-alt h6 text-center">{{ item.product.name }}</h3>
+                        <!-- Product category name -->
+                        {% if item.product.category %}
+                        <p class="small mt-2 mb-0 text-center">
+                            <a class="alt-text-muted font-weight-bold"
+                                href="{% url 'products' %}?category={{ item.product.category.name }}">
+                                <i class="fas fa-list"></i> {{ item.product.category.friendly_name }}
+                            </a>
+                        </p>
+                        {% endif %}
+                        <!-- Product subcategory name -->
+                        {% if item.product.subcategory %}
+                        <p class="small mt-2 mb-0 text-center">
+                            <a class="text-muted font-weight-bold"
+                                href="{% url 'products' %}?subcategory={{ item.product.subcategory.name }}">
+                                <i class="fas fa-tag"></i> {{ item.product.subcategory.friendly_name }}
+                            </a>
+                        </p>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer bg-white text-center mb-2">
+                        <div class="price-box mb-1">
+                            <p class="h4 mb-0 pb-1"><span class="text-left brand-font"> रु{{ item.product.price }}</span></p>
+                            {% if item.product.discount > 0.01 %}
+                            <p class="mb-0"><s> रु{{ item.product.original_price }}</s></p>
+                            <p class="mb-0 text-center"><span class="text-purple"><strong>You save:</strong> </span>  रु{{ item.product.discount }}</p>
+                            {% endif %}
+                        </div>
+                        {% if item.shared_ingredients %}
+
+                        <p class="small text-success mb-2">
+                        <strong>Shared ingredients:</strong><br>
+                        {{ item.shared_ingredients|join:", " }}
+                        </p>
+
+                        {% endif %}
+                        <a href="{% url 'product_detail' product.id %}" class="btn btn-sm btn-black text-shadow mt-1 rounded-0">
+                            <span class="text-uppercase">Shop Now</span>
+                            <span class="icon">
+                                <i class="fas fa-shopping-bag"></i>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty%}
+            <p class="text-center brand-font">No ingredient-based recommendations available.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    
     <!-- RELATED PRODUCTS -->
     <div class="featured-bg pb-5">
         <h4 class="display-4 related-products-heading text-purple pt-5 pb-3">

@@ -96,6 +96,10 @@ def product_detail(request, product_id):
     """
 
     product = get_object_or_404(Product, pk=product_id)
+    content_recommendations = get_content_based_recommendations(
+        product,
+        limit=5,
+    )
     products = Product.objects.all()
 
     related_products = Product.objects.filter(subcategory=product.subcategory).exclude(
@@ -116,6 +120,7 @@ def product_detail(request, product_id):
             "related_products": related_products,
             "reviews": reviews,
             "brands": brands,
+            "content_recommendations": content_recommendations,
         }
         return render(request, template, context)
     else:
@@ -130,6 +135,7 @@ def product_detail(request, product_id):
         "reviews": reviews,
         "brands": brands,
         "wishlist": wishlist,
+        "content_recommendations": content_recommendations,
     }
 
     return render(request, "products/product_detail.html", context)
@@ -288,10 +294,3 @@ def edit_brand(request, brand_id):
     }
 
     return render(request, template, context)
-
-
-# def product_detail(request, product_id):
-
-#     product = get_object_or_404(Product, pk=product_id)
-
-#     content_recommendations = get_content_based_recommendations(product)
